@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="ja-JP">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width">
+    
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.js"></script>
+    <script src="../script/swal.js"></script>
+    <script src="../script/expense.js"></script>
+    <style>/* Estilos CSS para a página de registro de renda */
+/* Coloque este CSS em um arquivo chamado "expense.css" e importe-o na página HTML */
+
+/* Estilos para o header */
+header {
+  background-color: #f1f1f1;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.header-left-div img {
+  margin-right: 10px;
+}
+
+.header-right-div {
+  font-weight: bold;
+}
+
+/* Estilos para os botões de seleção */
+.top-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px;
+  border: none;
+  cursor: pointer;
+  margin-right: 5px;
+}
+
+.top-button:hover {
+  background-color: #45a049;
+}
+
+/* Estilos para as divisões comuns */
+.div-comon-division {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.div-comon-division-common {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.date-div-span {
+  margin-right: 10px;
+}
+
+.right-div-add {
+  width: 20px;
+  height: 20px;
+  background-color: #4caf50;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.center-colomn-div {
+  flex-grow: 1;
+}
+
+.calender-input {
+  width: 100%;
+  padding: 5px;
+  border: none;
+}
+
+.calender-input-text {
+  width: 100%;
+  padding: 5px;
+  border: none;
+  resize: vertical;
+}
+
+/* Estilos para o seletor de método de pagamento */
+#pay-select {
+  width: 100%;
+  padding: 5px;
+  border: none;
+}
+
+/* Estilos para o campo de valor */
+#value-input {
+  width: 100%;
+  padding: 5px;
+  border: none;
+}
+
+/* Estilos para os botões de seleção de categoria */
+.category-main-div {
+  display: flex;
+  justify-content: space-between;
+}
+
+.category-select-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.category-select-button img {
+  margin-bottom: 5px;
+}
+
+/* Estilos para as imagens dos ícones de categoria */
+.category-select-button img {
+  width: 40px;
+}
+
+</style>
+</head>
+
+<body>
+  <header>
+    <div class="header-left-div">
+      <img src="../image/rootsgrill_logo.png" width="50" class="setting-right-button" />
+      <span>Roots Grill</span>
+    </div>
+    <div class="header-right-div">
+      <span id="name-span"></span>
+    </div>
+  </header>
+  <div class="main-div">
+    <div class="div-comon-division">
+      <input type="button" class="top-button" value="履歴" onclick="pagechange('restFluxo')"/>
+      <input type="button" class="top-button" id="keihi-select" value="経費" onclick="process1(1)"/>
+      <input type="button" class="top-button" id="syunyu-select" value="収入" onclick="process1(2)"/>
+    </div>
+    <div class="div-comon-division-common">
+      <div class="date-div-span">日付</div>
+      <div class="right-div-add" onclick="dayChange(1)"><</div>
+      <div class="center-colomn-div"><input type="date" class="calender-input" id="calender-input" required/></div>
+      <div class="right-div-add" onclick="dayChange(2)">></div>
+    </div>
+    <div class="div-comon-division-common">
+      <div class="date-div-span">メモ</div>
+      <div class="right-div-add"></div>
+      <div class="center-colomn-div"><textarea placeholder="内容入力" type="text" id="memo-pay" rows="8" cols="40" required class="calender-input-text"></textarea></div>
+      <div class="right-div-add"></div>
+    </div>
+    <div class="div-comon-division-common">
+      <div class="date-div-span">方法</div>
+      <div class="right-div-add"></div>
+      <div class="center-colomn-div">
+        <select id="pay-select">
+          <option value="0">ゆうちょ銀行</option>
+          <option value="1">現金</option>
+          <option value="2">クレジット</option>
+          <!-- Adicione mais opções de tipo de conta aqui -->
+          <!-- Exemplo: -->
+          <!-- <option value="3">Outra Conta</option> -->
+        </select>
+      </div>
+      <div class="right-div-add"></div>
+    </div>
+    <div class="div-comon-division-common">
+      <div class="date-div-span">金額</div>
+      <div class="right-div-add"></div>
+      <div class="center-colomn-div"><input placeholder="￥" type="text" class="calender-input" id="value-input" oninput="kanmaReplace()" inputmode="numeric" required/></div>
+      <div class="right-div-add"></div>
+    </div>
+    <div class="category-main-div">
+      <div class="category-select-button" id="type1" onclick="selectType(1)">
+        <img src="../image/icon1.png" width="40"/>
+        <div><span>Despesa 1</span></div>
+      </div>
+      <div class="category-select-button" id="type2" onclick="selectType(2)">
+        <img src="../image/icon2.png" width="40"/>
+        <div><span>Despesa 2</span></div>
+      </div>
+      <!-- Adicione mais botões de seleção de tipo de despesa aqui -->
+      <!-- Exemplo: -->
+      <!-- <div class="category-select-button" id="type3" onclick="selectType(3)"> -->
+      <!--   <img src="../image/icon3.png" width="40"/> -->
+      <!--   <div><span>Despesa 3</span></div> -->
+      <!-- </div> -->
+    </div>
+  </div>
+</body>
+
+</html>
